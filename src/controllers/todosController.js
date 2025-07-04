@@ -13,6 +13,9 @@ exports.createTodo = (req, res) => {
     description,
     completed: false,
     createdAt: new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }),
+    completedAt: null,
+    deadlineAt: deadlineAt || null,
+    priority: priority || "medium"
   };
   todos.push(newTodo);
   res.status(201).json({ success: true, data: newTodo, message: "Tạo to-do mới thành công" });
