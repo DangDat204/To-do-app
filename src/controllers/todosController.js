@@ -6,13 +6,13 @@ exports.getTodos = (req, res) => {
 };
 
 exports.createTodo = (req, res) => {
-  const { title, description } = req.body;
+  const { title, description, deadlineAt, priority } = req.body;
   const newTodo = {
     id: idCounter++,
     title,
     description,
     completed: false,
-    createdAt: new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }),
+    createdAt: new Date(),
     completedAt: null,
     deadlineAt: deadlineAt || null,
     priority: priority || "medium"
@@ -27,6 +27,7 @@ exports.markCompleted = (req, res) => {
   if (!todo) return res.status(404).json({ success: false, message: 'Không tìm thấy to-do' });
 
   todo.completed = true;
+  todo.completedAt = new Date();
   res.json({ success: true, data: todo, message: 'Cập nhật to-do thành công' });
 };
 
