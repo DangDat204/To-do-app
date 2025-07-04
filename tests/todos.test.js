@@ -1,5 +1,5 @@
 const request = require('supertest');
-const app = require('../app');
+const app = require('../src/app');
 
 describe('To-Do API', () => {
   it('GET /todos should return list', async () => {
