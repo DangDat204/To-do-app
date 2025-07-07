@@ -4,6 +4,7 @@ services:
   backend:
     build:
       context: .
+    image: dangdat204/to-do-app:latest
     ports:
       - "${BACKEND_PORT:-4000}:4000"
     environment:
