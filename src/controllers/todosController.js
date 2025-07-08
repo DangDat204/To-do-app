@@ -1,41 +1,56 @@
-let todos = [];
-let idCounter = 1;
+const supabase = require('../supabaseClient');
 
-exports.getTodos = (req, res) => {
-  res.json({ success: true, data: todos, message: "Lấy danh sách to-do thành công" });
+// Lấy tất cả todos của user
+exports.getTodos = async (req, res) => {
+  const userId = req.user.id;
+  const { data, error } = await supabase
+    .from('todos')
+    .select('*')
+    .eq('user_id', userId);
+
+  if (error) return res.status(400).json({ error: error.message });
+  res.json(data);
 };
 
-exports.createTodo = (req, res) => {
-  const { title, description, deadlineAt, priority } = req.body;
-  const newTodo = {
-    id: idCounter++,
-    title,
-    description,
-    completed: false,
-    createdAt: new Date(),
-    completedAt: null,
-    deadlineAt: deadlineAt || null,
-    priority: priority || "medium"
-  };
-  todos.push(newTodo);
-  res.status(201).json({ success: true, data: newTodo, message: "Tạo to-do mới thành công" });
+// Tạo todo mới
+exports.createTodo = async (req, res) => {
+  const userId = req.user.id;
+  const { title, description, deadline_at, priority } = req.body;
+  const { data, error } = await supabase
+    .from('todos')
+    .insert([{ user_id: userId, title, description, deadline_at, priority }])
+    .select();
+
+  if (error) return res.status(400).json({ error: error.message });
+  res.json(data[0]);
 };
 
-exports.markCompleted = (req, res) => {
-  const id = parseInt(req.params.id);
-  const todo = todos.find(t => t.id === id);
-  if (!todo) return res.status(404).json({ success: false, message: 'Không tìm thấy to-do' });
+// Cập nhật todo
+exports.updateTodo = async (req, res) => {
+  const userId = req.user.id;
+  const todoId = req.params.id;
+  const { title, description, completed, deadline_at, priority } = req.body;
+  const { data, error } = await supabase
+    .from('todos')
+    .update({ title, description, completed, deadline_at, priority })
+    .eq('id', todoId)
+    .eq('user_id', userId)
+    .select();
 
-  todo.completed = true;
-  todo.completedAt = new Date();
-  res.json({ success: true, data: todo, message: 'Cập nhật to-do thành công' });
+  if (error) return res.status(400).json({ error: error.message });
+  res.json(data[0]);
 };
 
-exports.deleteTodo = (req, res) => {
-  const id = parseInt(req.params.id);
-  const index = todos.findIndex(t => t.id === id);
-  if (index === -1) return res.status(404).json({ success: false, message: 'Không tìm thấy to-do' });
+// Xóa todo
+exports.deleteTodo = async (req, res) => {
+  const userId = req.user.id;
+  const todoId = req.params.id;
+  const { error } = await supabase
+    .from('todos')
+    .delete()
+    .eq('id', todoId)
+    .eq('user_id', userId);
 
-  todos.splice(index, 1);
-  res.json({ success: true, message: 'Xoá to-do thành công' });
+  if (error) return res.status(400).json({ error: error.message });
+  res.json({ success: true });
 };
