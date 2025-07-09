@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 
-# Copy the rest of the source code
+# Copy the rest of the source codez
 COPY . .
 
 # Expose port (default 4000, can be overridden by env)
