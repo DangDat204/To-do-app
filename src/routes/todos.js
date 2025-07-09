@@ -1,11 +1,14 @@
 const express = require('express');
 const router = express.Router();
+const authMiddleware = require('../middlewares/authMiddleware');
 const todosController = require('../controllers/todosController');
-const { validateCreateTodo } = require('../validators/todosValidator');
+
+router.use(authMiddleware);
 
 router.get('/', todosController.getTodos);
-router.post('/', validateCreateTodo, todosController.createTodo);
-router.patch('/:id', todosController.markCompleted);
+router.post('/', todosController.createTodo);
+router.patch('/:id', todosController.updateTodo);
 router.delete('/:id', todosController.deleteTodo);
+
 
 module.exports = router;
